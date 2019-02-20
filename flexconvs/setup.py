@@ -8,6 +8,7 @@ setup(
         CUDAExtension('_cuda_ext', [
             'src/extension.cc',
             'src/flex_conv_kernel.cc',
+            'src/flex_conv_kernel.cu',
         ]),
     ],
     cmdclass={

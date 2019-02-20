@@ -2,7 +2,6 @@
 #include <vector>
 #include "flex_conv_kernel.h"
 
-
 torch::Tensor flex_conv_forward(
     torch::Tensor features,
     torch::Tensor theta,
@@ -26,6 +25,9 @@ torch::Tensor flex_conv_forward(
     // Run kernel
     if (device.is_cuda())
     {
+        flex_conv_forward_kernel_cuda(
+            features, theta, bias, neighborhood, positions,
+            output);
     }
     else
     {
@@ -58,17 +60,21 @@ std::vector<torch::Tensor> flex_conv_backward(
 
     if (device.is_cuda())
     {
+        flex_conv_backward_kernel_cuda(
+            features, theta, bias,
+            neighborhood, positions, topdiff,
+            grad_features, grad_theta, grad_bias);
     }
     else
     {
         flex_conv_backward_kernel_cpu(
-            features, theta, bias, neighborhood, positions, topdiff,
+            features, theta, bias,
+            neighborhood, positions, topdiff,
             grad_features, grad_theta, grad_bias);
     }
 
     return {grad_features, grad_theta, grad_bias};
 }
-
 
 // Interface
 PYBIND11_MODULE(TORCH_EXTENSION_NAME, m)
