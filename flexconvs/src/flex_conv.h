@@ -1,7 +1,7 @@
 #ifndef USER_OPS_KERNELS_FLEX_CONV_OP_H_
 #define USER_OPS_KERNELS_FLEX_CONV_OP_H_
 
-#include <torch/torch.h>
+#include "ATen/ATen.h"
 
 void flex_conv_forward_kernel_cpu(
     at::Tensor features,

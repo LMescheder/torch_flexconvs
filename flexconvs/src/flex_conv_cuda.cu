@@ -1,14 +1,12 @@
-#include <cub/cub.cuh>
-
-#include "flex_conv_kernel.h"
 #include "ATen/ATen.h"
-
+#include "cub/cub.cuh"
 
 inline int up2(int len, int th) { return (len - 1) / th + 1; }
 
 
 // Implementations
 template <typename scalar_t>
+__global__
 void flex_conv_forward_kernel_cuda_impl(
     const int B, const int N, const int K,
     const int Dp, const int Din, const int Dout,
@@ -56,6 +54,7 @@ void flex_conv_forward_kernel_cuda_impl(
 }
 
 template <typename scalar_t>
+__global__
 void flex_conv_backward_kernel_cuda_impl(
     const int B, const int N, const int K,
     const int Dp, const int Din, const int Dout,
@@ -144,11 +143,11 @@ void flex_conv_forward_kernel_cuda(
         features.type(), "flex_conv_forward_kernel_cuda", ([&] {
             flex_conv_forward_kernel_cuda_impl<scalar_t><<<grid, block>>>(
                 B, N, K, Dp, Din, Dout,
+                positions.data<scalar_t>(),
                 features.data<scalar_t>(),
+                neighborhood.data<int>(),
                 theta.data<scalar_t>(),
                 bias.data<scalar_t>(),
-                neighborhood.data<int>(),
-                positions.data<scalar_t>(),
                 output.data<scalar_t>());
         }));
 }
@@ -177,20 +176,18 @@ void flex_conv_backward_kernel_cuda(
     dim3 grid(up2(Dout, threads), up2(N, threads), B);
 
     AT_DISPATCH_FLOATING_TYPES(
-        features.type(), "flex_conv_forward_kernel_cuda", ([&] {
+        features.type(), "flex_conv_backward_kernel_cuda", ([&] {
             flex_conv_backward_kernel_cuda_impl<scalar_t><<<grid, block>>>(
                 B, N, K, Dp, Din, Dout,
+                positions.data<scalar_t>(),
                 features.data<scalar_t>(),
+                neighborhood.data<int>(),
                 theta.data<scalar_t>(),
                 bias.data<scalar_t>(),
-                neighborhood.data<int>(),
-                positions.data<scalar_t>(),
-                output.data<scalar_t>(),
                 topdiff.data<scalar_t>(),
                 grad_features.data<scalar_t>(),
                 grad_theta.data<scalar_t>(),
-                grad_bias.data<scalar_t>(),
+                grad_bias.data<scalar_t>()
             );
         }));
 }
-

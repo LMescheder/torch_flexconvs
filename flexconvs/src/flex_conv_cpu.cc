@@ -1,5 +1,5 @@
 #include <torch/torch.h>
-#include "flex_conv_kernel.h"
+#include "flex_conv.h"
 
 
 // Implementations

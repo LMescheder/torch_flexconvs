@@ -1,6 +1,6 @@
-#include <torch/torch.h>
+#include <torch/extension.h>
 #include <vector>
-#include "flex_conv_kernel.h"
+#include "flex_conv.h"
 
 torch::Tensor flex_conv_forward(
     torch::Tensor features,
@@ -25,9 +25,9 @@ torch::Tensor flex_conv_forward(
     // Run kernel
     if (device.is_cuda())
     {
-        flex_conv_forward_kernel_cuda(
-            features, theta, bias, neighborhood, positions,
-            output);
+        // flex_conv_forward_kernel_cuda(
+        //     features, theta, bias, neighborhood, positions,
+        //     output);
     }
     else
     {
