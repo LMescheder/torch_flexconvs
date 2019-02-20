@@ -25,9 +25,9 @@ torch::Tensor flex_conv_forward(
     // Run kernel
     if (device.is_cuda())
     {
-        // flex_conv_forward_kernel_cuda(
-        //     features, theta, bias, neighborhood, positions,
-        //     output);
+        flex_conv_forward_kernel_cuda(
+            features, theta, bias, neighborhood, positions,
+            output);
     }
     else
     {
