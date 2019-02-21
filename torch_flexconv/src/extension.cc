@@ -159,7 +159,7 @@ std::vector<torch::Tensor> flex_deconv_backward(
 
 
 // FlexPool
-torch::Tensor flex_pool_forward(
+std::vector<torch::Tensor> flex_pool_forward(
     torch::Tensor features,
     torch::Tensor neighborhood)
 {
@@ -193,7 +193,7 @@ torch::Tensor flex_pool_forward(
             features, neighborhood, output, argmax);
     }
 
-    return output;
+    return {output, argmax};
 }
 
 torch::Tensor flex_pool_backward(
