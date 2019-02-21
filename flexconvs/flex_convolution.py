@@ -15,28 +15,30 @@ class FlexConvolutionFunction(autograd.Function):
             output = output + bias
 
         ctx.save_for_backward(
-            features, weight_theta, weight_bias, neighborhood, positions)
+            features, weight_theta, weight_bias,
+            neighborhood, positions, bias)
 
         return output
 
     @staticmethod
     def backward(ctx, grad_output):
-        features, weight_theta, weight_bias, neighborhood, positions = \
+        features, weight_theta, weight_bias, neighborhood, positions, bias = \
             ctx.saved_variables
 
-        grad_features, grad_theta, grad_bias = flex_conv_backward(
-            features, grad_output, weight_bias,
-            neighborhood, positions, grad_output
-        )
+        grad_features, grad_weight_theta, grad_weight_bias = \
+            flex_conv_backward(
+                features, weight_theta, weight_bias,
+                neighborhood, positions, grad_output
+            )
 
-        if weight_bias is not None:
-            grad_weight_bias = grad_output
+        if bias is not None:
+            grad_bias = grad_output
         else:
-            grad_weight_bias = None
+            grad_bias = None
 
         gradients = (
-            grad_features, grad_theta, grad_weight_bias, grad_output,
-            None, None
+            grad_features, grad_weight_theta, grad_weight_bias,
+            None, None, grad_bias
         )
 
         return gradients

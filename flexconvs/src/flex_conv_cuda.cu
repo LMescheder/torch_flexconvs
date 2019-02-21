@@ -384,7 +384,7 @@ void flex_conv_forward_kernel_cuda(
     at::Tensor positions,
     at::Tensor output) 
 {
-    typedef int NBtype;
+    using NBtype = int;
 
     const int B = neighborhood.size(0);
     const int K = neighborhood.size(1);
@@ -426,7 +426,7 @@ void flex_conv_backward_kernel_cuda(
     at::Tensor grad_theta, 
     at::Tensor grad_bias)
 {
-    typedef int NBtype;
+    using NBtype = int;
 
     // get dimensions
     const int B = neighborhood.size(0);
