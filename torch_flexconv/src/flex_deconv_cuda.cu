@@ -141,6 +141,8 @@ void flex_deconv_forward_kernel_cuda(
     dim3 block(threads, threads, 1);
     dim3 grid(up2(Dout, threads), up2(N, threads), B);
 
+    output.zero_();
+
     AT_DISPATCH_FLOATING_TYPES(
         features.type(), "flex_deconv_forward_kernel_cuda", ([&] {
             flex_deconv_forward_kernel_cuda_impl<scalar_t><<<grid, block>>>(
@@ -178,6 +180,10 @@ void flex_deconv_backward_kernel_cuda(
     const int threads = 32;
     dim3 block(threads, threads, 1);
     dim3 grid(up2(Dout, threads), up2(N, threads), B);
+
+    grad_features.zero_();
+    grad_theta.zero_();
+    grad_bias.zero_();
 
     AT_DISPATCH_FLOATING_TYPES(
         features.type(), "flex_deconv_backward_kernel_cuda", ([&] {

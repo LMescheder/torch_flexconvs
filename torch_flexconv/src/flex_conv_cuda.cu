@@ -393,6 +393,8 @@ void flex_conv_forward_kernel_cuda(
     const int Din = theta.size(1);
     const int Dout = theta.size(2);
 
+    output.zero_();
+
     AT_DISPATCH_FLOATING_TYPES(
         features.type(), "flex_conv_forward_kernel_cpu", ([&]
     {
@@ -435,6 +437,10 @@ void flex_conv_backward_kernel_cuda(
     const int Dp = theta.size(0);
     const int Din = theta.size(1);
     const int Dout = theta.size(2);
+
+    grad_features.zero_();
+    grad_theta.zero_();
+    grad_bias.zero_();
 
     AT_DISPATCH_FLOATING_TYPES(
         features.type(), "flex_conv_backward_kernel_cpu", ([&] 

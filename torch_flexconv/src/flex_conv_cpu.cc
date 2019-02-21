@@ -155,6 +155,8 @@ void flex_conv_forward_kernel_cpu(
     at::Tensor positions,
     at::Tensor output)
 {
+    output.zero_();
+
     AT_DISPATCH_FLOATING_TYPES(
         features.type(), "flex_conv_forward_kernel_cpu", ([&] {
             flex_conv_forward_kernel_cpu_impl<scalar_t>(
@@ -178,6 +180,10 @@ void flex_conv_backward_kernel_cpu(
     at::Tensor grad_theta,
     at::Tensor grad_bias)
 {
+    grad_features.zero_();
+    grad_theta.zero_();
+    grad_bias.zero_();
+
     AT_DISPATCH_FLOATING_TYPES(
         features.type(), "flex_conv_backward_kernel_cpu", ([&] {
             flex_conv_backward_kernel_cpu_impl<scalar_t>(

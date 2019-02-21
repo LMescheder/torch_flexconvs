@@ -2,6 +2,7 @@
 #include <vector>
 #include "flex_conv.h"
 #include "flex_deconv.h"
+#include "flex_pool.h"
 
 
 //Flexconv
@@ -156,6 +157,75 @@ std::vector<torch::Tensor> flex_deconv_backward(
     return {grad_features, grad_theta, grad_bias};
 }
 
+
+// FlexPool
+torch::Tensor flex_pool_forward(
+    torch::Tensor features,
+    torch::Tensor neighborhood)
+{
+    // Determine dtype and device
+    auto dtype = features.dtype();
+    auto dtype_i = neighborhood.dtype();
+
+    auto device = features.device();
+    auto options = torch::dtype(dtype).device(device);
+    auto options_i = torch::dtype(dtype_i).device(device);
+
+    // TODO: checks
+
+    // Create output Tensor
+    const int B = neighborhood.size(0);
+    const int N = neighborhood.size(2);
+    const int D = features.size(1);
+
+    auto output = torch::zeros({B, D, N}, options);
+    auto argmax = torch::zeros({B, D, N}, options_i);
+
+    // Run kernel
+    if (device.is_cuda())
+    {
+        flex_pool_forward_kernel_cuda(
+            features, neighborhood, output, argmax);
+    }
+    else
+    {
+        flex_pool_forward_kernel_cpu(
+            features, neighborhood, output, argmax);
+    }
+
+    return output;
+}
+
+torch::Tensor flex_pool_backward(
+    torch::Tensor features,
+    torch::Tensor neighborhood,
+    torch::Tensor topdiff,
+    torch::Tensor argmax)
+{
+    // Determine dtype and device
+    auto dtype = features.dtype();
+    auto device = features.device();
+
+    // TODO: checks
+
+    // Create output tensors
+    auto grad_features = torch::zeros_like(features);
+
+    if (device.is_cuda())
+    {
+        flex_pool_backward_kernel_cuda(
+            features, neighborhood, topdiff, argmax, grad_features);
+    }
+    else
+    {
+        flex_pool_backward_kernel_cpu(
+            features, neighborhood, topdiff, argmax, grad_features);
+
+    }
+
+    return grad_features;
+}
+
 // Interface
 PYBIND11_MODULE(TORCH_EXTENSION_NAME, m)
 {
@@ -163,4 +233,6 @@ PYBIND11_MODULE(TORCH_EXTENSION_NAME, m)
     m.def("flex_conv_backward", &flex_conv_backward, "FlexConv backward");
     m.def("flex_deconv_forward", &flex_deconv_forward, "FlexDeconv forward");
     m.def("flex_deconv_backward", &flex_deconv_backward, "FlexDeconv backward");
+    m.def("flex_pool_forward", &flex_pool_forward, "FlexPool forward");
+    m.def("flex_pool_backward", &flex_pool_backward, "FlexPool backward");
 }
