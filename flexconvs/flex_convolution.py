@@ -12,7 +12,7 @@ class FlexConvolutionFunction(autograd.Function):
             features, weight_theta, weight_bias, neighborhood, positions)
 
         if bias is not None:
-            output = output + bias
+            output = output + bias.unsqueeze(-1)
 
         ctx.save_for_backward(
             features, weight_theta, weight_bias,
@@ -32,7 +32,7 @@ class FlexConvolutionFunction(autograd.Function):
             )
 
         if bias is not None:
-            grad_bias = grad_output
+            grad_bias = grad_output.sum(dim=2).sum(dim=0)
         else:
             grad_bias = None
 
@@ -43,6 +43,8 @@ class FlexConvolutionFunction(autograd.Function):
 
         return gradients
 
+
+flex_convolution = FlexConvolutionFunction.apply
 
 class FlexConvolution(nn.Module):
     def __init__(self, in_channels, out_channels, bias=True):
