@@ -1,7 +1,7 @@
 import torch
 from torch.autograd import gradcheck
 from scipy.spatial import cKDTree
-from flexconvs import FlexConvolution, flex_convolution
+from flexconvs import FlexConvolutionTransposed, flex_convolution_transposed
 
 
 def test_flexconv():
@@ -18,7 +18,7 @@ def test_flexconv():
     net = torch.rand(B, 32, 1000)
     grad_in = torch.rand(B, 32, 1000)
 
-    conv = FlexConvolution(32, 32)
+    conv = FlexConvolutionTransposed(32, 32)
 
     conv.zero_grad()
     out1 = conv(net, idx_nn, p)
@@ -65,12 +65,12 @@ def test_flexconv_grads():
     bias = torch.randn(out_channels)
     feat = torch.rand(B, in_channels, n_points)
 
-    # weight_theta = weight_theta.cuda()
-    # weight_bias = weight_bias.cuda()
-    # bias = bias.cuda()
-    # p = p.cuda()
-    # idx_nn = idx_nn.cuda()
-    # feat = feat.cuda()
+    weight_theta = weight_theta.cuda()
+    weight_bias = weight_bias.cuda()
+    bias = bias.cuda()
+    p = p.cuda()
+    idx_nn = idx_nn.cuda()
+    feat = feat.cuda()
 
     feat = feat.to(torch.float64)
     weight_theta = weight_theta.to(torch.float64)
@@ -84,5 +84,5 @@ def test_flexconv_grads():
     bias.requires_grad_()
 
     gradcheck(
-        flex_convolution, 
+        flex_convolution_transposed, 
         [feat, weight_theta, weight_bias, idx_nn, p, bias])

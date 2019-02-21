@@ -1,8 +1,8 @@
-from flexconvs.flex_convolution import (
+from flexconvs.flex_conv import (
     FlexConvolution, flex_convolution 
 )
 
-from flexconvs.flex_convolution_transposed import (
+from flexconvs.flex_conv_transposed import (
     FlexConvolutionTransposed, flex_convolution_transposed
 )
 
