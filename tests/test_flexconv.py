@@ -1,7 +1,7 @@
 import torch
 from torch.autograd import gradcheck
 from scipy.spatial import cKDTree
-from flexconvs import FlexConvolution, flex_convolution
+from torch_flexconv import FlexConvolution, flex_convolution
 
 
 def test_flexconv():

@@ -12,7 +12,7 @@ src_files = [
 ]
 
 setup(
-    name='flexconvs',
+    name='torch_flexconv',
     ext_modules=[
         CUDAExtension('_cuda_ext', src_files,
             extra_compile_args={
