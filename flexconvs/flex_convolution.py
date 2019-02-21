@@ -1,7 +1,7 @@
 import torch
 import torch.nn as nn
 import torch.autograd as autograd
-from _cuda_ext import flex_conv_forward, flex_conv_backward
+from ._cuda_ext import flex_conv_forward, flex_conv_backward
 
 
 class FlexConvolutionFunction(autograd.Function):
@@ -67,7 +67,7 @@ class FlexConvolution(nn.Module):
             nn.init.zeros_(self.bias)
     
     def forward(self, features, neighborhood, positions):
-        out = FlexConvolutionFunction.apply(
+        out = flex_convolution(
             features, self.weight_theta, self.weight_bias,
             neighborhood, positions, self.bias
         )

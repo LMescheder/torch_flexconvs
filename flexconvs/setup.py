@@ -7,10 +7,12 @@ src_files = [
     'src/extension.cc',
     'src/flex_conv_cpu.cc',
     'src/flex_conv_cuda.cu',
+    'src/flex_deconv_cpu.cc',
+    'src/flex_deconv_cuda.cu',
 ]
 
 setup(
-    name='_cuda_ext',
+    name='flexconvs',
     ext_modules=[
         CUDAExtension('_cuda_ext', src_files,
             extra_compile_args={

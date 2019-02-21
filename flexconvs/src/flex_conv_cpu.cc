@@ -157,7 +157,7 @@ void flex_conv_forward_kernel_cpu(
 {
     AT_DISPATCH_FLOATING_TYPES(
         features.type(), "flex_conv_forward_kernel_cpu", ([&] {
-            flex_conv_forward_kernel_cpu_impl(
+            flex_conv_forward_kernel_cpu_impl<scalar_t>(
                 features.accessor<scalar_t, 3>(),
                 theta.accessor<scalar_t, 3>(),
                 bias.accessor<scalar_t, 2>(),
@@ -180,7 +180,7 @@ void flex_conv_backward_kernel_cpu(
 {
     AT_DISPATCH_FLOATING_TYPES(
         features.type(), "flex_conv_backward_kernel_cpu", ([&] {
-            flex_conv_backward_kernel_cpu_impl(
+            flex_conv_backward_kernel_cpu_impl<scalar_t>(
                 features.accessor<scalar_t, 3>(),
                 theta.accessor<scalar_t, 3>(),
                 bias.accessor<scalar_t, 2>(),
