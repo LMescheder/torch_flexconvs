@@ -86,3 +86,7 @@ def test_flexconv_grads():
     gradcheck(
         flex_convolution, 
         [feat, weight_theta, weight_bias, idx_nn, p, bias])
+
+
+test_flexconv()
+test_flexconv_grads()

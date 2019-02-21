@@ -56,7 +56,7 @@ void flex_pool_backward_kernel_cuda_impl(
     const scalar_t* topdiff,
     const int* argmax,
     scalar_t* grad_features) 
-    {
+{
     const int b = blockIdx.z;
 
     for (int d = blockIdx.y * blockDim.y + threadIdx.y; d < D;
@@ -95,17 +95,18 @@ void flex_pool_forward_kernel_cuda(
     argmax.zero_();
     
     AT_DISPATCH_FLOATING_TYPES(
-        features.type(), "flex_pool_forward_kernel_cuda", ([&] {
-            output.fill_(std::numeric_limits<scalar_t>::lowest());
+        features.type(), "flex_pool_forward_kernel_cuda", ([&] 
+    {
+        output.fill_(std::numeric_limits<scalar_t>::lowest());
 
-            flex_pool_forward_kernel_cuda_impl<scalar_t>(
-                B, N, K, D,
-                features.accessor<scalar_t, 3>(),
-                neighborhood.accessor<int, 3>(),
-                output.accessor<scalar_t, 3>(),
-                argmax.accessor<int, 3>(),
-                std::numeric_limits<scalar_t>::lowest())
-        }));
+        flex_pool_forward_kernel_cuda_impl<scalar_t><<<grid, block>>>(
+            B, N, K, D,
+            features.data<scalar_t>(),
+            neighborhood.data<int>(),
+            output.data<scalar_t>(),
+            argmax.data<int>(),
+            std::numeric_limits<scalar_t>::lowest());
+    }));
 }
 
 void flex_pool_backward_kernel_cuda(
@@ -125,16 +126,17 @@ void flex_pool_backward_kernel_cuda(
     dim3 block(threads, threads, 1);
     dim3 grid(up2(N, threads), up2(D, threads), B);
 
-    grad_features.zero_()
+    grad_features.zero_();
 
     AT_DISPATCH_FLOATING_TYPES(
-    features.type(), "flex_pool_backward_kernel_cuda", ([&] {
-        flex_pool_backward_kernel_cuda_impl<scalar_t>(
+        features.type(), "flex_pool_backward_kernel_cuda", ([&]
+    {
+        flex_pool_backward_kernel_cuda_impl<scalar_t><<<grid, block>>>(
             B, N, K, D,
             features.data<scalar_t>(),
             neighborhood.data<int>(),
             topdiff.data<scalar_t>(),
             argmax.data<int>(),
-            grad_features.data<float>()
+            grad_features.data<scalar_t>());
     }));
 }

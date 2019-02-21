@@ -1,4 +1,4 @@
-#include <torch/extension.h>
+#include <torch/torch.h>
 #include <vector>
 #include "flex_conv.h"
 #include "flex_deconv.h"
